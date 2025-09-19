@@ -4,7 +4,7 @@ import { useStore } from '../lib/store'
 export const CountrySelector: React.FC = () => {
   const country = useStore(s => s.country)
   const setCountry = useStore(s => s.setCountry)
-  const countries = useStore(s => s.countries)
+  const countries = useStore(s => s.countries) ?? []
   const loadCountries = useStore(s => s.loadCountries)
 
   React.useEffect(() => { loadCountries() }, [loadCountries])
@@ -13,7 +13,7 @@ export const CountrySelector: React.FC = () => {
     <div className="grid">
       <label htmlFor="country-select">Select a country</label>
       <select id="country-select" value={country} onChange={e => setCountry(e.target.value)} aria-describedby="country-help">
-        {(countries.length ? countries : [
+        {(countries && countries.length ? countries : [
           { code: 'US', name: 'United States' }
         ]).map(c => (
           <option key={c.code} value={c.code}>{c.name}</option>

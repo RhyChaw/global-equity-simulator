@@ -15,8 +15,9 @@ Monorepo Layout
 Architecture Overview
 ---------------------
 
-- React UI calls Django API for equity scenarios, country rules, and PDF exports
-- Django delegates heavy numeric calculations to the Spring Boot service
+- React (Vite + TS) UI calls Django API for scenarios, rules, PDFs, and AI explanations
+- Django (DRF) delegates heavy numeric calculations to Spring Boot and calls Ollama for AI
+- Spring Boot performs cap table math at scale; Ollama generates natural-language explanations
 - All services are containerized and can be deployed together via Helm
 
 Getting Started (Local)
@@ -45,6 +46,14 @@ Docker (All Services)
 
 - From repo root: `docker compose up --build`
 
+Ollama (Local AI)
+-----------------
+
+- Install Ollama: `brew install ollama`
+- Start server: `ollama serve`
+- Pull model (example): `ollama pull llama3.1:8b`
+- The Django API will call `http://localhost:11434` by default. In Docker, it uses `host.docker.internal:11434`.
+
 Kubernetes with Helm
 --------------------
 
@@ -58,5 +67,14 @@ Roadmap
 - JWT auth and role-based views (CFO vs Employee)
 - Optional GraphQL gateway for unified API
 - Horizontal scaling demo for Spring service
+
+Tech Stack
+----------
+
+- Frontend: React 18, TypeScript, Vite, Zustand, Recharts
+- Backend: Django 5 + DRF, ReportLab, requests, CORS
+- Microservice: Java 21 + Spring Boot 3 (REST)
+- AI: Ollama (local LLM), default model `llama3.1:8b`
+- DevOps: Docker, docker-compose, Kubernetes, Helm
 
 

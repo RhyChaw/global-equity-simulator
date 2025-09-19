@@ -14,15 +14,16 @@ export const ScenarioBuilder: React.FC = () => {
 
       <label htmlFor="grant-input">Grant percentage</label>
       <div className="row">
-        <input id="grant-input" type="number" value={scenario.grant_percent} onChange={e => setScenario({ grant_percent: Number(e.target.value) })} aria-describedby="grant-help" />
+        <input id="grant-input" type="number" min={0} max={20} step={0.01} value={scenario.grant_percent} onChange={e => setScenario({ grant_percent: Math.max(0, Math.min(20, Number(e.target.value))) })} aria-describedby="grant-help" />
         <span className="muted">%</span>
       </div>
       <div id="grant-help" className="muted">Percentage of fully diluted shares to grant.</div>
 
       <label htmlFor="valuation-input">Company valuation (USD)</label>
       <div className="row">
-        <input id="valuation-input" type="number" value={scenario.valuation} onChange={e => setScenario({ valuation: Number(e.target.value) })} />
+        <input id="valuation-input" type="number" min={1_000_000} step={100_000} value={scenario.valuation} onChange={e => setScenario({ valuation: Math.max(1_000_000, Number(e.target.value)) })} aria-describedby="valuation-help" />
       </div>
+      <div id="valuation-help" className="muted">Minimum $1M valuation, adjust in $100k steps.</div>
 
       <button onClick={runSimulation} disabled={loading} aria-busy={loading}>{loading ? 'Simulating…' : 'Run Simulation'}</button>
     </div>

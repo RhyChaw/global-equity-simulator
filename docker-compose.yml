@@ -16,6 +16,8 @@ services:
       - "8000:8000"
     environment:
       - SPRING_BASE_URL=http://spring:8080
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_MODEL=llama3.1:8b
     depends_on:
       - spring
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]

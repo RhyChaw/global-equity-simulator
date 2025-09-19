@@ -59,8 +59,8 @@ def simulate(request):
 
     if calc is None:
         # Local fallback
-        strike = valuation * 0.0001
         fmv = valuation / 100_000_000
+        strike = fmv * 0.6
         shares_outstanding = 100_000_000
         grant_shares = shares_outstanding * grant_percent
         spread = max(fmv - strike, 0) * grant_shares
@@ -111,5 +111,41 @@ def pdf_report(request):
     response = HttpResponse(buffer.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="equity_report.pdf"'
     return response
+
+
+@api_view(["POST"])
+def ai_explain(request):
+    body = request.data or {}
+    result = body.get("result")
+    if not result:
+        return JsonResponse({"error": "Missing 'result' payload"}, status=400)
+
+    prompt = (
+        "You are an equity compensation assistant. Explain these simulation results in clear, plain English for a startup operator. "
+        "Cover grant shares, spread value, estimated tax due by country rules, and take-home. "
+        "Be concise (under 150 words) and avoid legal advice.\n\nResults JSON:\n" + str(result)
+    )
+
+    try:
+        resp = requests.post(
+            f"{settings.OLLAMA_BASE_URL}/api/generate",
+            json={"model": settings.OLLAMA_MODEL, "prompt": prompt, "stream": False},
+            timeout=8,
+        )
+        if resp.ok:
+            data = resp.json()
+            text = data.get("response") or ""
+            return JsonResponse({"explanation": text})
+    except Exception:
+        pass
+
+    # Fallback explanation
+    fallback = (
+        "The grant creates a number of shares based on your % of fully diluted shares. "
+        "Spread value estimates intrinsic value at exercise (FMV minus strike) multiplied by grant shares. "
+        "We apply a country-specific tax rate to estimate tax due, and subtract it to show take-home. "
+        "These are illustrative numbers and not tax advice."
+    )
+    return JsonResponse({"explanation": fallback, "note": "Ollama unavailable; using fallback."}, status=200)
 
 

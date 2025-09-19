@@ -6,6 +6,15 @@ import { useStore } from '../lib/store'
 import { pdfUrl } from '../lib/api'
 
 export const App: React.FC = () => {
+  const country = useStore(s => s.country)
+  const scenario = useStore(s => s.scenario)
+  const runSimulation = useStore(s => s.runSimulation)
+  React.useEffect(() => {
+    const id = setTimeout(() => {
+      runSimulation()
+    }, 350)
+    return () => clearTimeout(id)
+  }, [country, scenario.employee_name, scenario.grant_percent, scenario.valuation, runSimulation])
   return (
     <>
       <header className="header" role="banner">
@@ -51,6 +60,8 @@ const SummaryPanel: React.FC = () => {
   const result = useStore(s => s.result)
   const country = useStore(s => s.country)
   const scenario = useStore(s => s.scenario)
+  const explanation = useStore(s => s.explanation)
+  const getExplanation = useStore(s => s.getExplanation)
   return (
     <div className="grid" aria-live="polite">
       <p className="muted">Run a simulation to estimate spread value, taxes, and take-home under country-specific rules. Export a PDF for compliance reporting.</p>
@@ -63,16 +74,22 @@ const SummaryPanel: React.FC = () => {
             </div>
             <div className="stat">
               <div className="label">Spread Value</div>
-              <div className="value">${Intl.NumberFormat().format(Math.round(result.calc?.spread_value || 0))}</div>
+              <div className={`value ${((result.calc?.spread_value||0) >= 0) ? 'success' : 'danger'}`}>${Intl.NumberFormat().format(Math.round(result.calc?.spread_value || 0))}</div>
             </div>
             <div className="stat">
               <div className="label">Tax Due</div>
-              <div className="value">${Intl.NumberFormat().format(Math.round(result.tax_due || 0))}</div>
+              <div className="value danger">${Intl.NumberFormat().format(Math.round(result.tax_due || 0))}</div>
             </div>
             <div className="stat">
-              <div className="label">Take Home</div>
-              <div className="value">${Intl.NumberFormat().format(Math.round(result.take_home || 0))}</div>
+              <div className={`label`}>Take Home</div>
+              <div className={`value ${((result.take_home||0) >= 0) ? 'success' : 'danger'}`}>${Intl.NumberFormat().format(Math.round(result.take_home || 0))}</div>
             </div>
+          </div>
+          <div>
+            <span className="chip" aria-label="Status">
+              <span className="dot" style={{ color: (result.take_home||0) >= 0 ? '#36d399' : '#ff6b6b' }} />
+              {(result.take_home||0) >= 0 ? 'Profitable' : 'Underwater'}
+            </span>
           </div>
           <details>
             <summary className="muted">Technical details</summary>
@@ -84,8 +101,13 @@ const SummaryPanel: React.FC = () => {
       )}
       <div className="panel-actions">
         <button onClick={() => window.open(pdfUrl({ employee: scenario.employee_name, country }), '_blank')}>Export PDF</button>
-        <button className="secondary" onClick={() => alert('LLM explainer coming soon')}>Explain with AI</button>
+        <button className="secondary" onClick={getExplanation}>Explain with AI</button>
       </div>
+      {explanation && (
+        <div className="card" role="note" aria-label="AI explanation">
+          {explanation}
+        </div>
+      )}
     </div>
   )
 }

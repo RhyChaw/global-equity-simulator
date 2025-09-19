@@ -19,8 +19,8 @@ public class CalcController {
 
         double sharesOutstanding = 100_000_000d;
         double grantShares = sharesOutstanding * grantPercent;
-        double strike = valuation * 0.0001d; // demo strike formula
         double fmv = valuation / sharesOutstanding; // price per share
+        double strike = fmv * 0.6d; // demo strike at 60% of FMV to yield positive spread
         double spread = Math.max(fmv - strike, 0) * grantShares;
 
         return Map.of(

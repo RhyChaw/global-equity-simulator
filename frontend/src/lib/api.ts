@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_BASE = import.meta.env.VITE_API_BASE?.replace(/\/$/, '') || ''
+const API_BASE = (import.meta.env.VITE_API_BASE && import.meta.env.VITE_API_BASE.replace(/\/$/, '')) || ''
 
 export const api = axios.create({
   baseURL: `${API_BASE}/api`
@@ -28,6 +28,11 @@ export const simulate = async (payload: SimulationRequest) => {
 export const pdfUrl = (params: { employee: string; country: string }) => {
   const q = new URLSearchParams(params as any).toString()
   return `${API_BASE}/api/reports/pdf?${q}`
+}
+
+export const explainAI = async (result: any): Promise<string> => {
+  const { data } = await api.post('/ai/explain', { result })
+  return data.explanation as string
 }
 
 

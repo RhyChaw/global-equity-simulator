@@ -20,6 +20,10 @@ spec:
           env:
             - name: SPRING_BASE_URL
               value: http://spring:8080
+        - name: OLLAMA_BASE_URL
+          value: http://ollama:11434
+        - name: OLLAMA_MODEL
+          value: llama3.1:8b
 ---
 apiVersion: v1
 kind: Service
