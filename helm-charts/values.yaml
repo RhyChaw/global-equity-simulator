@@ -1,0 +1,10 @@
+image:
+  frontend: global-equity-frontend:latest
+  api: global-equity-api:latest
+  spring: global-equity-spring:latest
+
+ingress:
+  enabled: true
+  host: equity.local
+
+

@@ -1,0 +1,32 @@
+# Node
+node_modules/
+*.log
+.env
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+env/
+.mypy_cache/
+.pytest_cache/
+media/
+staticfiles/
+
+# Java
+target/
+.gradle/
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.DS_Store
+.idea/
+.vscode/
+
+# Kubernetes/Helm
+charts/**/charts/
+charts/**/tmp/
+
+

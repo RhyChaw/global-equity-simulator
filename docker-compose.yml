@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE=http://localhost:8000
+    depends_on:
+      - api
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+  api:
+    build: ./backend-django
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_BASE_URL=http://spring:8080
+    depends_on:
+      - spring
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+  spring:
+    build: ./backend-spring
+    ports:
+      - "8080:8080"
+
+networks:
+  default:
+    name: equity-net
+
+

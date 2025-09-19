@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+MVNW_PATH="$(dirname "$0")/.mvn/wrapper/maven-wrapper.jar"
+if [ ! -f "$MVNW_PATH" ]; then
+  echo "Downloading Maven Wrapper..." >&2
+  WRAPPER_URL="https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar"
+  mkdir -p "$(dirname "$MVNW_PATH")"
+  curl -fsSL "$WRAPPER_URL" -o "$MVNW_PATH"
+fi
+exec java -Dmaven.multiModuleProjectDirectory="$PWD" -cp "$MVNW_PATH" org.apache.maven.wrapper.MavenWrapperMain "$@"
+
+
